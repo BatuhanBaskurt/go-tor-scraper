@@ -7,7 +7,7 @@
 ## ✨ Özellikler
 
 * **Toplu Tarama:** Dosyadan domain listesini otomatik okur.
-* **Tor Proxy:** Tüm trafik SOCKS5 üzerinden (127.0.0.1:9050) anonim geçer.
+* **Tor Proxy:** Tüm trafik SOCKS5 üzerinden (`127.0.0.1:9050`) anonim geçer.
 * **Onion Erişimi:** Standart tarayıcıların giremediği gizli servisleri tarar.
 * **Performans:** Go ile optimize edilmiş bağlantı yönetimi.
 
@@ -17,13 +17,13 @@
 
 ### 📋 Gereksinimler
 
-1. **Tor Servisi:** Bilgisayarında Tor çalışıyor olmalı (Port: 9050).
-2. **Go:** 1.18+ sürümü.
+1.  **Tor Servisi:** Bilgisayarında Tor çalışıyor olmalı (Varsayılan Port: `9050`).
+2.  **Go:** 1.18+ sürümü.
 
 ### ⚙️ Kurulum
 
 ```bash
-git clone [https://github.com/BatuhanBaskurt/go-tor-scraper.git](https://github.com/BatuhanBaskurt/go-tor-scraper.git)
+git clone https://github.com/BatuhanBaskurt/go-tor-scraper.git
 cd go-tor-scraper
 go mod tidy
 🖥️ Kullanım
@@ -32,12 +32,12 @@ Taramak istediğin domainleri bir dosyaya (örneğin targets.txt) alt alta ekle,
 Bash
 
 go run main.go targets.txt
-Not: Dosya adını komutun sonuna boşluk bırakarak yazman yeterlidir.
+Not: Dosya adını komutun sonuna boşluk bırakarak yazman yeterlidir. Program dosyadaki tüm adresleri sırayla tarayacaktır.
 
 🛠️ Teknik Detay
 Program, Go'nun net/http kütüphanesini Tor'un SOCKS5 proxy'sine bağlayarak çalışır. Bu sayede her istekte gerçek IP adresin gizli tutulur.
 
 Go
 
-// SOCKS5 üzerinden anonim bağlantı
+// SOCKS5 üzerinden anonim bağlantı yapısı
 dialer, _ := proxy.SOCKS5("tcp", "127.0.0.1:9050", nil, proxy.Direct)
