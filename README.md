@@ -18,30 +18,35 @@ Yerel bir metin dosyasında (.txt) listelenen domainleri (normal web veya .onion
 - Çalışan Tor servisi (varsayılan port: 9050)
 
 ## Kurulum
-
 ```bash
 git clone https://github.com/BatuhanBaskurt/go-tor-scraper.git
 cd go-tor-scraper
 go mod tidy
+```
 
-Kullanım Rehberi
+## Kullanım Rehberi
 
-Taramak istediğiniz domainleri targets.txt gibi bir dosyaya her satıra bir tane yazın.
-Örnek targets.txt içeriği:
+Taramak istediğiniz domainleri `targets.txt` gibi bir dosyaya her satıra bir tane yazın.
 
-texthttp://example.com
+Örnek `targets.txt` içeriği:
+```text
+http://example.com
 http://example.onion
 https://check.torproject.org
+```
 
 Çalıştırın:
-Bashgo run main.go targets.txt
+```bash
+go run main.go targets.txt
+```
 
-Not: Sadece dosya adını yazmanız yeterli, program içeriği satır satır otomatik okur.
+**Not:** Sadece dosya adını yazmanız yeterli, program içeriği satır satır otomatik okur.
 
-Teknik Altyapı ve Çalışma Mantığı
-Araç, Go'nun net/http kütüphanesini golang.org/x/net/proxy ile genişleterek Tor proxy'si üzerinden bağlantı kurar.
+## Teknik Altyapı ve Çalışma Mantığı
 
-Go// Tor SOCKS5 Proxy Yapılandırması
+Araç, Go'nun `net/http` kütüphanesini `golang.org/x/net/proxy` ile genişleterek Tor proxy'si üzerinden bağlantı kurar.
+```go
+// Tor SOCKS5 Proxy Yapılandırması
 dialer, err := proxy.SOCKS5("tcp", "127.0.0.1:9050", nil, proxy.Direct)
 if err != nil {
     log.Fatal("Tor proxy bağlantısı kurulamadı: ", err)
@@ -53,12 +58,15 @@ client := &http.Client{
     Transport: transport,
     Timeout:   time.Second * 30, // 30 saniye timeout süresi
 }
+```
 
-Notlar
+## Notlar
 
-Tor ağı doğal olarak yavaş olabilir, özellikle .onion sitelerde.
-Yoğun kullanımda Tor exit node'lar engellenebilir.
-Yalnızca yasal ve etik amaçlarla kullanılmalıdır.
+- Tor ağı doğal olarak yavaş olabilir, özellikle .onion sitelerde.
+- Yoğun kullanımda Tor exit node'lar engellenebilir.
+- Yalnızca yasal ve etik amaçlarla kullanılmalıdır.
 
-Batuhan Başkurt
-https://github.com/BatuhanBaskurt
+## Yazar
+
+**Batuhan Başkurt**  
+[GitHub](https://github.com/BatuhanBaskurt)
