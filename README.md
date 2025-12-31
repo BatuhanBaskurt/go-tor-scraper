@@ -1,52 +1,67 @@
+Önceki görüntülerde yaşadığın kayma sorunu, metnin içindeki Bash ve Go gibi etiketlerin kod bloklarının dışına çıkmasından kaynaklanıyordu. Aşağıdaki metni olduğu gibi, hiçbir satırı değiştirmeden kopyalayıp README.md dosyasına yapıştırırsan, GitHub üzerinde profesyonel, uzun ve hatasız bir dökümanın olacak.
+
 Markdown
 
 # Go Tor Scraper 🕸️ 🛡️
 
-**Go Tor Scraper**, yerel bir metin dosyasındaki domain listesini (URL) okuyan ve her bir adrese Tor ağının sunduğu tam anonimlik katmanı üzerinden HTTP istekleri gönderen yüksek performanslı bir Go aracıdır. Özellikle `.onion` servislerinin durumunu kontrol etmek ve kimlik gizleyerek toplu veri taraması yapmak için optimize edilmiştir.
+**Go Tor Scraper**, yerel bir metin dosyasında listelenen domain adreslerini (standart web veya .onion) okuyan ve her birine Tor ağının anonimlik katmanı üzerinden güvenli HTTP istekleri gönderen, yüksek performanslı bir Go (Golang) aracıdır.
+
+
 
 ---
 
-## ✨ Özellikler
+## ✨ Temel Özellikler
 
-* **Toplu Dosya İşleme:** Yüzlerce satırlık `.txt` dosyalarını hızlıca parse eder.
-* **Tor SOCKS5 Entegrasyonu:** Tüm ağ trafiğini otomatik olarak `127.0.0.1:9050` proxy hattına yönlendirir.
-* **Onion Ağ Desteği:** Standart HTTP istemcilerinin erişemediği Tor Gizli Servislerine (.onion) sorunsuz erişim sağlar.
-* **Hata Yönetimi:** Bağlantı zaman aşımı (timeout) veya erişilemeyen servisleri terminalde raporlar.
-* **IP Maskeleme:** Hedef sunucular gerçek IP adresinizi asla göremez, sadece Tor çıkış düğümlerini (exit nodes) görür.
+* **Tam Anonimlik:** Tüm ağ trafiği SOCKS5 proxy (`127.0.0.1:9050`) üzerinden Tor ağına yönlendirilir, gerçek IP adresiniz gizlenir.
+* **Toplu İşleme Kapasitesi:** Tek bir `.txt` dosyası içerisindeki yüzlerce domaini sırayla ve verimli bir şekilde tarar.
+* **Onion Ağ Erişimi:** Standart HTTP istemcilerinin ulaşamadığı Tor Gizli Servislerine (`.onion`) doğrudan erişim sağlar.
+* **Hafif ve Hızlı:** Go dilinin düşük sistem kaynağı tüketimi ve hız avantajını kullanarak optimize edilmiştir.
+* **Kolay Kullanım:** Karmaşık konfigürasyonlarla uğraşmadan, sadece dosya yolunu belirterek çalıştırılabilir.
 
 ---
 
-## 🚀 Kurulum
+## 🚀 Kurulum ve Hazırlık
 
-Projeyi çalıştırmadan önce sisteminizde **Go** (1.18+) ve aktif bir **Tor** servisinin kurulu olduğundan emin olun.
+Projeyi çalıştırmadan önce sisteminizde **Go (1.18+)** ve aktif bir **Tor** servisinin kurulu olduğundan emin olmalısınız.
+
+### 📋 Gereksinimler
+
+1.  **Tor Servisi:** Tor daemon arka planda çalışıyor olmalıdır (Varsayılan port: `9050`).
+2.  **Go:** Geliştirme ortamınızda Go kurulu olmalıdır.
+
+### ⚙️ Adımlar
 
 ```bash
-# Projeyi klonlayın
+# Projeyi GitHub'dan klonlayın
 git clone [https://github.com/BatuhanBaskurt/go-tor-scraper.git](https://github.com/BatuhanBaskurt/go-tor-scraper.git)
 
-# Proje dizinine girin
+# Proje klasörüne geçiş yapın
 cd go-tor-scraper
 
-# Bağımlılıkları yükleyin
+# Gerekli bağımlılıkları indirin
 go mod tidy
-🖥️ Kullanım
-Taramak istediğiniz domainleri her satıra bir tane gelecek şekilde bir metin dosyasına kaydedin. Ardından programı, dosya adını argüman olarak vererek çalıştırın:
+🖥️ Kullanım Rehberi
+Taramak istediğiniz domainleri (örneğin targets.txt) her satıra bir tane gelecek şekilde hazırlayın. Ardından programı aşağıdaki şekilde çalıştırın:
 
 Bash
 
 go run main.go targets.txt
-Not: Tor servisinin arka planda çalıştığından ve varsayılan 9050 portunun açık olduğundan emin olun.
+Önemli: Komutun sonuna sadece hedef dosyanın adını yazmanız yeterlidir. Program, dosya içeriğini otomatik olarak satır satır işleyecektir.
 
-🛠️ Teknik Altyapı
-Bu araç, Go'nun standart net/http paketini golang.org/x/net/proxy kütüphanesi ile genişleterek Tor ağına bağlar.
+🛠️ Teknik Altyapı ve Çalışma Mantığı
+Bu araç, Go'nun standart net/http kütüphanesini golang.org/x/net/proxy paketiyle genişleterek bir proxy dialer oluşturur. Bu yapı, tüm HTTP trafiğini yerel Tor portuna tüneller.
 
 Go
 
-// Tor Proxy Yapılandırması
+// Tor SOCKS5 Proxy Yapılandırması
 dialer, err := proxy.SOCKS5("tcp", "127.0.0.1:9050", nil, proxy.Direct)
 if err != nil {
-    log.Fatal("Proxy bağlantısı kurulamadı!")
+    log.Fatal("Tor proxy bağlantısı kurulamadı: ", err)
 }
 
+// Özel Transport ve Client oluşturma
 transport := &http.Transport{Dial: dialer.Dial}
-client := &http.Client{Transport: transport}
+client := &http.Client{
+    Transport: transport,
+    Timeout:   time.Second * 30, // 30 saniye timeout süresi
+}
