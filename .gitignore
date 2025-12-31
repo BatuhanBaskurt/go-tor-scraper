@@ -1,0 +1,8 @@
+# Binary files
+main
+*.exe
+*.exe~
+
+# Output folders
+output/
+scan_report.log
