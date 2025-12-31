@@ -1,58 +1,43 @@
 # Go Tor Scraper 🕸️ 🛡️
 
-**Go Tor Scraper**, Tor ağının sunduğu anonimlikten yararlanarak web sitelerinden veri çekmenize olanak tanıyan, Go (Golang) ile geliştirilmiş hızlı ve güvenli bir araçtır. `.onion` uzantılı sitelere erişim sağlamak veya standart web kazıma işlemlerinde IP engellemelerinden kaçınmak için idealdir.
+**Go Tor Scraper**, bir metin dosyasındaki domain listesini alarak her birine Tor ağının anonimliği üzerinden HTTP istekleri atan hızlı bir araçtır. `.onion` adreslerini toplu kontrol etmek için idealdir.
 
 ---
 
 ## ✨ Özellikler
 
-* **Tor Entegrasyonu:** Tüm trafik Tor ağı üzerinden proxy edilerek anonimlik sağlanır.
-* **Onion Desteği:** Standart tarayıcıların erişemediği `.onion` adreslerini kazıyabilir.
-* **Eşzamanlılık (Concurrency):** Go'nun `goroutine` yapısı sayesinde yüksek hızda tarama.
-* **IP Rotasyonu:** Tor üzerinden her istekte veya belirli aralıklarla yeni bir kimlik (IP) alma imkanı.
-* **Kolay Kurulum:** Minimum bağımlılık ve hızlı konfigürasyon.
+* **Toplu Tarama:** Dosyadan domain listesini otomatik okur.
+* **Tor Proxy:** Tüm trafik SOCKS5 üzerinden (127.0.0.1:9050) anonim geçer.
+* **Onion Erişimi:** Standart tarayıcıların giremediği gizli servisleri tarar.
+* **Performans:** Go ile optimize edilmiş bağlantı yönetimi.
 
 ---
 
 ## 🚀 Başlangıç
 
-Bu projeyi yerel makinenizde çalıştırmak için aşağıdaki adımları takip edin.
-
 ### 📋 Gereksinimler
 
-* **Go:** (Sürüm 1.18 veya üzeri)
-* **Tor Service:** Bilgisayarınızda bir Tor servisinin çalışıyor olması gerekir.
-    * **macOS:** `brew install tor`
-    * **Linux:** `sudo apt install tor`
-    * **Windows:** [Tor Project](https://www.torproject.org/download/tor-browser-alpha/) üzerinden uzman paketini indirin.
+1. **Tor Servisi:** Bilgisayarında Tor çalışıyor olmalı (Port: 9050).
+2. **Go:** 1.18+ sürümü.
 
 ### ⚙️ Kurulum
 
-1.  **Projeyi klonlayın:**
-    ```bash
-    git clone [https://github.com/BatuhanBaskurt/go-tor-scraper.git](https://github.com/BatuhanBaskurt/go-tor-scraper.git)
-    cd go-tor-scraper
-    ```
-
-2.  **Bağımlılıkları indirin:**
-    ```bash
-    go mod tidy
-    ```
-
-3.  **Tor Servisi:** Tor servisinin çalıştığından emin olun (Varsayılan port genellikle **9050**'dir).
-
-### 🖥️ Kullanım
-
-Uygulamayı çalıştırmak için terminale şu komutu girin:
-
 ```bash
-go run main.go -url "[http://check.torproject.org](http://check.torproject.org)"
-🛠️ Teknik Detaylar
-Bu araç, HTTP isteklerini Tor SOCKS5 proxy hattına yönlendirmek için özel bir http.Client yapılandırması kullanır.
+git clone [https://github.com/BatuhanBaskurt/go-tor-scraper.git](https://github.com/BatuhanBaskurt/go-tor-scraper.git)
+cd go-tor-scraper
+go mod tidy
+🖥️ Kullanım
+Taramak istediğin domainleri bir dosyaya (örneğin targets.txt) alt alta ekle, sonra direkt şu şekilde çalıştır:
+
+Bash
+
+go run main.go targets.txt
+Not: Dosya adını komutun sonuna boşluk bırakarak yazman yeterlidir.
+
+🛠️ Teknik Detay
+Program, Go'nun net/http kütüphanesini Tor'un SOCKS5 proxy'sine bağlayarak çalışır. Bu sayede her istekte gerçek IP adresin gizli tutulur.
 
 Go
 
-// Örnek Proxy Bağlantı Yapısı
+// SOCKS5 üzerinden anonim bağlantı
 dialer, _ := proxy.SOCKS5("tcp", "127.0.0.1:9050", nil, proxy.Direct)
-httpTransport := &http.Transport{Dial: dialer.Dial}
-client := &http.Client{Transport: httpTransport}
