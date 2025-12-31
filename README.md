@@ -1,47 +1,39 @@
-Knk anladım sorunu, senin yazdığın README'de kod bloklarının başındaki "Bash", "Go", "Markdown" gibi etiketler markdown'ı bozuyor. GitHub bu etiketleri başlık gibi algılıyor ve kod bloklarını kaydırıyor, hatta bazen render etmiyor.
-Aşağıdaki versiyonu tam olarak böyle kopyala-yapıştır yap, hiçbir yerinde değişiklik yapma. Bu sefer %100 düzgün render olacak, ekran görüntüsündeki gibi temiz ve profesyonel duracak.
-Markdown# Go Tor Scraper 🕸️ 🛡️
+# Go Tor Scraper
 
-**Go Tor Scraper**, yerel bir metin dosyasında listelenen domain adreslerini (standart web veya .onion) okuyan ve her birine Tor ağının anonimlik katmanı üzerinden güvenli HTTP istekleri gönderen, yüksek performanslı bir Go (Golang) aracıdır.
+Go ile yazılmış, Tor ağı üzerinden anonim HTTP istekleri gönderen yüksek performanslı bir araç.
 
----
+Yerel bir metin dosyasında (.txt) listelenen domainleri (normal web veya .onion) sırayla tarar ve yanıtları işler.
 
-## ✨ Temel Özellikler
+## Temel Özellikler
 
-- **Tam Anonimlik:** Tüm ağ trafiği SOCKS5 proxy (`127.0.0.1:9050`) üzerinden Tor ağına yönlendirilir, gerçek IP adresiniz gizlenir.
-- **Toplu İşleme Kapasitesi:** Tek bir `.txt` dosyası içerisindeki yüzlerce domaini sırayla ve verimli bir şekilde tarar.
-- **Onion Ağ Erişimi:** Standart HTTP istemcilerinin ulaşamadığı Tor Gizli Servislerine (`.onion`) doğrudan erişim sağlar.
-- **Hafif ve Hızlı:** Go dilinin düşük sistem kaynağı tüketimi ve hız avantajını kullanarak optimize edilmiştir.
-- **Kolay Kullanım:** Karmaşık konfigürasyonlarla uğraşmadan, sadece dosya yolunu belirterek çalıştırılabilir.
+- Tam anonimlik (SOCKS5 proxy ile Tor trafiği)
+- .onion adreslerine doğrudan erişim
+- Toplu domain tarama (yüzlerce satır destekler)
+- Hafif ve hızlı (Go avantajı)
+- Basit kullanım, karmaşık konfigürasyon yok
 
----
-
-## 🚀 Kurulum ve Hazırlık
-
-Projeyi çalıştırmadan önce sisteminizde **Go (1.18+)** ve aktif bir **Tor** servisinin kurulu olduğundan emin olmalısınız.
-
-### Gereksinimler
-
-1. **Tor Servisi:** Tor daemon arka planda çalışıyor olmalıdır (Varsayılan port: `9050`).
-2. **Go:** Geliştirme ortamınızda Go kurulu olmalıdır.
-
-### Adımlar
+## Kurulum
 
 ```bash
-# Projeyi GitHub'dan klonlayın
 git clone https://github.com/BatuhanBaskurt/go-tor-scraper.git
-
-# Proje klasörüne geçiş yapın
 cd go-tor-scraper
-
-# Gerekli bağımlılıkları indirin
 go mod tidy
-🖥️ Kullanım Rehberi
-Taramak istediğiniz domainleri (örneğin targets.txt) her satıra bir tane gelecek şekilde hazırlayın. Ardından programı aşağıdaki şekilde çalıştırın:
+Gereksinimler:
+
+Go 1.18 veya üstü
+Çalışan Tor servisi (varsayılan port: 9050)
+
+Kullanım Rehberi
+Taramak istediğiniz domainleri targets.txt gibi bir dosyaya her satıra bir tane yazın.
+Örnek targets.txt içeriği:
+texthttp://example.com
+http://example.onion
+https://check.torproject.org
+Çalıştırın:
 Bashgo run main.go targets.txt
-Önemli: Komutun sonuna sadece hedef dosyanın adını yazmanız yeterlidir. Program, dosya içeriğini otomatik olarak satır satır işleyecektir.
-🛠️ Teknik Altyapı ve Çalışma Mantığı
-Bu araç, Go'nun standart net/http kütüphanesini golang.org/x/net/proxy paketiyle genişleterek bir proxy dialer oluşturur. Bu yapı, tüm HTTP trafiğini yerel Tor portuna tüneller.
+Not: Sadece dosya adını yazmanız yeterli, program içeriği satır satır otomatik okur.
+Teknik Altyapı ve Çalışma Mantığı
+Araç, Go'nun net/http kütüphanesini golang.org/x/net/proxy ile genişleterek Tor proxy'si üzerinden bağlantı kurar.
 Go// Tor SOCKS5 Proxy Yapılandırması
 dialer, err := proxy.SOCKS5("tcp", "127.0.0.1:9050", nil, proxy.Direct)
 if err != nil {
@@ -54,7 +46,7 @@ client := &http.Client{
     Transport: transport,
     Timeout:   time.Second * 30, // 30 saniye timeout süresi
 }
-🔒 Notlar
+Notlar
 
 Tor ağı doğal olarak yavaş olabilir, özellikle .onion sitelerde.
 Yoğun kullanımda Tor exit node'lar engellenebilir.
